@@ -13,7 +13,8 @@
           "inlineTemplate": true,
           "inlineStyle": true,
           "prefix": "rf",
-          "skipTests": true
+          "skipTests": true,
+          "flat": true
         }
       },
       "root": "",
