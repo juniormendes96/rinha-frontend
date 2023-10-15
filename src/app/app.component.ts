@@ -14,9 +14,9 @@ interface ContentData {
   standalone: true,
   imports: [CommonModule, JsonViewerComponent],
   template: `
-    <main class="h-full w-full p-5">
+    <main class="h-full w-full py-6 px-5">
       <div class="m-auto w-full max-w-5xl" *ngIf="content$ | async as content; else noFile">
-        <h1 class="text-3xl font-bold">{{ fileName$ | async }}</h1>
+        <h1 class="text-3xl font-bold mb-3">{{ fileName$ | async }}</h1>
         <rf-json-viewer [content]="content"></rf-json-viewer>
       </div>
       <ng-template #noFile>

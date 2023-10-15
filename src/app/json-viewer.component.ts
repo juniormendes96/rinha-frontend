@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
   selector: 'rf-json-viewer',
   standalone: true,
   imports: [CommonModule],
-  template: ` <div></div> `,
+  template: ` <pre>{{ content | json }}</pre> `,
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
