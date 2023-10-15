@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
   selector: 'rf-app',
   standalone: true,
   imports: [CommonModule],
-  template: `<p>app works!</p>`,
+  template: `<p class="text-gray-500">app works!</p>`,
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
