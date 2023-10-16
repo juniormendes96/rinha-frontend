@@ -10,11 +10,13 @@ export type NodeContent = object | any[] | string | number | null;
   template: `
     <div class="relative">
       <div [style.padding-left]="leftSpacing">
-        <span class="text-[#4E9590]" [class.text-gray-300]="isInsideArray">{{ key }}</span
-        >:
-        <span class="text-[#F2CAB8] font-bold" *ngIf="contentEntries.length"
-          ><ng-container *ngIf="isArray">[</ng-container><ng-container *ngIf="isObject">{{ '{' }}</ng-container></span
-        ><span *ngIf="!isArray && !isObject">{{ content | json }}</span>
+        <span class="text-[#4E9590]" [class.text-gray-300]="isInsideArray">{{ key }}</span>
+        <span>:&nbsp;</span>
+        <span class="text-[#F2CAB8] font-bold" *ngIf="contentEntries.length">
+          <ng-container *ngIf="isArray">[</ng-container>
+          <ng-container *ngIf="isObject">{{ '{' }}</ng-container>
+        </span>
+        <span *ngIf="!isArray && !isObject">{{ content | json }}</span>
       </div>
       <rf-node
         *ngFor="let entry of contentEntries"
@@ -24,9 +26,10 @@ export type NodeContent = object | any[] | string | number | null;
         [parentContent]="content"
       ></rf-node>
       <div *ngIf="contentEntries.length" [style.padding-left]="leftSpacing">
-        <span class="text-[#F2CAB8] font-bold"
-          ><ng-container *ngIf="isArray">]</ng-container><ng-container *ngIf="isObject">{{ '}' }}</ng-container></span
-        >
+        <span class="text-[#F2CAB8] font-bold">
+          <ng-container *ngIf="isArray">]</ng-container>
+          <ng-container *ngIf="isObject">{{ '}' }}</ng-container>
+        </span>
       </div>
       <span
         [style.left]="leftSpacing"
