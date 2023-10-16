@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+export type NodeContent = object | any[] | string | number | null;
+
 @Component({
   selector: 'rf-node',
   standalone: true,
@@ -38,8 +40,8 @@ import { CommonModule } from '@angular/common';
 })
 export class NodeComponent implements OnInit {
   @Input({ required: true }) key!: string;
-  @Input({ required: true }) content!: any;
-  @Input({ required: true }) parentContent!: any;
+  @Input({ required: true }) content!: NodeContent;
+  @Input({ required: true }) parentContent!: NodeContent;
   @Input() level = 0;
 
   isArray = false;
@@ -47,13 +49,13 @@ export class NodeComponent implements OnInit {
   isInsideArray = false;
   leftSpacing = '';
 
-  contentEntries: [string, any][] = [];
+  contentEntries: [string, NodeContent][] = [];
 
   ngOnInit(): void {
     this.isArray = Array.isArray(this.content);
     this.isObject = !this.isArray && typeof this.content === 'object' && this.content !== null;
     this.isInsideArray = Array.isArray(this.parentContent);
-    this.contentEntries = this.isArray || this.isObject ? Object.entries(this.content) : [];
+    this.contentEntries = this.isArray || this.isObject ? Object.entries(this.content as object | any[]) : [];
     this.leftSpacing = this.level * 16 + 'px';
   }
 }
