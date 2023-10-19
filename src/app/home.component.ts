@@ -1,8 +1,6 @@
-import { JsonService } from './json.service';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BehaviorSubject, map, tap } from 'rxjs';
-import { FileService } from './file.service';
+import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 import { JsonViewerState } from './json-viewer.component';
 
@@ -29,11 +27,25 @@ import { JsonViewerState } from './json-viewer.component';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent {
-  private fileService = inject(FileService);
-  private jsonService = inject(JsonService);
   private router = inject(Router);
 
+  private validatorWorker = new Worker(new URL('./json-validator.worker', import.meta.url));
+
+  private file?: File;
+
   invalidJson$ = new BehaviorSubject(false);
+
+  constructor() {
+    this.validatorWorker.onmessage = ({ data }) => {
+      const isValid = data;
+      this.invalidJson$.next(!isValid);
+
+      if (!isValid) return;
+
+      const state: JsonViewerState = { file: this.file };
+      this.router.navigate(['/viewer'], { state });
+    };
+  }
 
   onFileSelected(event: Event): void {
     const files = (event.target as HTMLInputElement)?.files;
@@ -41,21 +53,7 @@ export class HomeComponent {
 
     if (!file) return;
 
-    this.fileService
-      .readFileContent(file)
-      .pipe(
-        map(content => this.jsonService.parse(content)),
-        tap(({ valid }) => this.invalidJson$.next(!valid))
-      )
-      .subscribe(({ content, valid }) => {
-        if (!valid) return;
-
-        const state: JsonViewerState = {
-          fileName: file.name,
-          jsonContent: content!
-        };
-
-        this.router.navigate(['/viewer'], { state });
-      });
+    this.file = file;
+    this.validatorWorker.postMessage({ file });
   }
 }

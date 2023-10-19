@@ -1,39 +1,69 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { NodeComponent } from './node.component';
+import { ActivatedRoute } from '@angular/router';
+import { NodeComponent, NodeContent } from './node.component';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { BehaviorSubject } from 'rxjs';
 
 export interface JsonViewerState {
-  fileName: string;
-  jsonContent: object;
+  file?: File;
 }
+
+const TWO_KB = 1024 * 2;
 
 @Component({
   selector: 'rf-json-viewer',
   standalone: true,
-  imports: [CommonModule, NodeComponent],
+  imports: [CommonModule, NodeComponent, InfiniteScrollModule],
   template: `
-    <div class="m-auto w-full max-w-5xl">
-      <h1 class="text-3xl font-bold mb-3">{{ state.fileName }}</h1>
-      <rf-node *ngFor="let entry of entries" [key]="entry[0]" [content]="entry[1]" [parentContent]="state.jsonContent"></rf-node>
+    <div
+      class="m-auto w-full max-w-5xl"
+      infinite-scroll
+      [infiniteScrollDistance]="1"
+      [infiniteScrollThrottle]="300"
+      (scrolled)="loadNextChunk()"
+    >
+      <h1 class="text-3xl font-bold mb-3">{{ file.name }}</h1>
+      <rf-node *ngFor="let entry of entries$ | async" [key]="entry[0]" [content]="entry[1]" [parentContent]="parentContent"></rf-node>
     </div>
   `,
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class JsonViewerComponent {
-  private router = inject(Router);
+export class JsonViewerComponent implements OnInit {
+  private route = inject(ActivatedRoute);
 
-  state = this.getState();
+  private worker = new Worker(new URL('./json-loader.worker', import.meta.url));
 
-  entries = Object.entries(this.state.jsonContent);
+  private isLoading = false;
 
-  private getState(): JsonViewerState {
-    const state = this.router.getCurrentNavigation()?.extras.state;
+  private chunkSizeInBytes = TWO_KB;
 
-    if (state) {
-      return state as JsonViewerState;
-    }
-    return { fileName: 'No file selected', jsonContent: {} };
+  file: File = this.route.snapshot.data['file'];
+
+  parentContent: NodeContent = null;
+
+  entries$ = new BehaviorSubject<[string, NodeContent][]>([]);
+
+  constructor() {
+    this.worker.onmessage = ({ data }) => {
+      const entries = Object.entries<NodeContent>(data);
+      this.entries$.next(entries);
+      this.parentContent = data;
+      this.chunkSizeInBytes += TWO_KB;
+      this.isLoading = false;
+    };
+  }
+
+  ngOnInit(): void {
+    this.loadNextChunk();
+  }
+
+  loadNextChunk(): void {
+    if (this.isLoading || !this.file) return;
+
+    this.isLoading = true;
+
+    this.worker.postMessage({ file: this.file, chunkSizeInBytes: this.chunkSizeInBytes });
   }
 }
