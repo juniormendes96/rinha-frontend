@@ -28,9 +28,7 @@ import { JsonViewerState } from './json-viewer.component';
 })
 export class HomeComponent {
   private router = inject(Router);
-
   private validatorWorker = new Worker(new URL('./json-validator.worker', import.meta.url));
-
   private file?: File;
 
   invalidJson$ = new BehaviorSubject(false);
