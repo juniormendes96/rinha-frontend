@@ -9,16 +9,17 @@ import { JsonViewerState } from './json-viewer.component';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="flex flex-col items-center justify-center h-full">
+    <div class="flex flex-col items-center justify-center h-full" *ngIf="{ isLoading: loading$ | async } as vm">
       <h1 class="text-5xl font-bold mb-4 text-center">JSON Tree Viewer</h1>
       <p class="text-2xl mb-7 text-center">Simple JSON Viewer that runs completely on-client. No data exchange</p>
       <input type="file" class="hidden" accept="application/json" #fileInput (change)="onFileSelected($event)" />
       <button
         type="button"
-        class="bg-gray-200 border-solid border border-black py-2 px-4 rounded font-medium hover:brightness-95"
+        class="bg-gray-200 border-solid border border-black py-2 px-4 rounded font-medium w-32 enabled:hover:brightness-95 disabled:opacity-50 disabled:cursor-not-allowed"
+        [disabled]="vm.isLoading"
         (click)="fileInput.click()"
       >
-        Load JSON
+        {{ vm.isLoading ? 'Loading...' : 'Load JSON' }}
       </button>
       <p *ngIf="invalidJson$ | async" class="text-red-600 mt-4">Invalid file. Please load a valid JSON file.</p>
     </div>
@@ -31,12 +32,14 @@ export class HomeComponent {
   private validatorWorker = new Worker(new URL('./json-validator.worker', import.meta.url));
   private file?: File;
 
+  loading$ = new BehaviorSubject(false);
   invalidJson$ = new BehaviorSubject(false);
 
   constructor() {
     this.validatorWorker.onmessage = ({ data }) => {
       const isValid = data;
       this.invalidJson$.next(!isValid);
+      this.loading$.next(false);
 
       if (!isValid) return;
 
@@ -51,6 +54,7 @@ export class HomeComponent {
 
     if (!file) return;
 
+    this.loading$.next(true);
     this.file = file;
     this.validatorWorker.postMessage({ file });
   }
