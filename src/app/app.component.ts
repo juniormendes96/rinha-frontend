@@ -7,7 +7,7 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <main class="h-full w-full py-6 px-5">
+    <main class="h-full w-full">
       <router-outlet></router-outlet>
     </main>
   `,

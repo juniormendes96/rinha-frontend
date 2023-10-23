@@ -18,7 +18,7 @@ import { CommonModule } from '@angular/common';
       >
         &nbsp;
       </span>
-      <span [innerHTML]="content"></span>
+      <span class="whitespace-nowrap" [innerHTML]="content"></span>
     </div>
   `,
   styles: [],
