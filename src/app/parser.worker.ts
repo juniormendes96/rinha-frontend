@@ -26,8 +26,8 @@ addEventListener('message', ({ data: { file, chunkSizeInBytes } }) => {
     const json = untruncateJson(result);
     const parsed = JSON.parse(json);
     const stringified = JSON.stringify(parsed, null, 3);
-    const lines = addHtmlTags(stringified).split('\n');
-    postMessage({ status: 'success', lines });
+    const rows = addHtmlTags(stringified).split('\n');
+    postMessage({ status: 'success', rows });
   };
   fileReader.onerror = () => postMessage({ status: 'error' });
 });

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
-import { JsonViewerState } from './json-viewer.component';
+import { ViewerState } from './viewer.component';
 
 @Component({
   selector: 'rf-home',
@@ -32,7 +32,7 @@ import { JsonViewerState } from './json-viewer.component';
 })
 export class HomeComponent {
   private router = inject(Router);
-  private validatorWorker = new Worker(new URL('./json-validator.worker', import.meta.url));
+  private validatorWorker = new Worker(new URL('./validator.worker', import.meta.url));
   private file?: File;
 
   loading$ = new BehaviorSubject(false);
@@ -46,7 +46,7 @@ export class HomeComponent {
 
       if (!isValid) return;
 
-      const state: JsonViewerState = { file: this.file };
+      const state: ViewerState = { file: this.file };
       this.router.navigate(['/viewer'], { state });
     };
   }

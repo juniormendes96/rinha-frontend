@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'rf-line',
+  selector: 'rf-row',
   standalone: true,
   imports: [CommonModule],
   template: `
@@ -24,7 +24,7 @@ import { CommonModule } from '@angular/common';
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LineComponent implements OnInit {
+export class RowComponent implements OnInit {
   @Input({ required: true }) content!: string;
 
   whiteSpaces: number[] = [];

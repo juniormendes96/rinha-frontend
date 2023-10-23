@@ -1,21 +1,21 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LineComponent } from './line.component';
+import { RowComponent } from './row.component';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { BehaviorSubject } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
-export interface JsonViewerState {
+export interface ViewerState {
   file?: File;
 }
 
 const TWO_KB = 1024 * 2;
 
 @Component({
-  selector: 'rf-json-viewer',
+  selector: 'rf-viewer',
   standalone: true,
-  imports: [CommonModule, LineComponent, InfiniteScrollModule, ScrollingModule],
+  imports: [CommonModule, RowComponent, InfiniteScrollModule, ScrollingModule],
   template: `
     <div class="h-full flex flex-col">
       <cdk-virtual-scroll-viewport
@@ -30,7 +30,7 @@ const TWO_KB = 1024 * 2;
       >
         <div class="m-auto w-full max-w-5xl p-6">
           <h1 class="text-3xl font-bold mb-3">{{ file.name }}</h1>
-          <rf-line *cdkVirtualFor="let line of lines$ | async; templateCacheSize: 0" class="block h-[24px]" [content]="line"></rf-line>
+          <rf-row *cdkVirtualFor="let row of rows$ | async; templateCacheSize: 0" class="block h-[24px]" [content]="row"></rf-row>
         </div>
       </cdk-virtual-scroll-viewport>
     </div>
@@ -38,25 +38,25 @@ const TWO_KB = 1024 * 2;
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class JsonViewerComponent implements OnInit {
+export class ViewerComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private parserWorker = new Worker(new URL('./json-parser.worker', import.meta.url));
+  private parserWorker = new Worker(new URL('./parser.worker', import.meta.url));
   private isLoading = false;
   private chunkSizeInBytes = TWO_KB;
 
   file: File = this.route.snapshot.data['file'];
 
-  lines$ = new BehaviorSubject<string[]>([]);
+  rows$ = new BehaviorSubject<string[]>([]);
 
   constructor() {
-    this.parserWorker.onmessage = ({ data: { lines, status } }) => {
+    this.parserWorker.onmessage = ({ data: { rows, status } }) => {
       if (status === 'error') {
         this.router.navigate(['/']);
         return;
       }
 
-      this.lines$.next(lines);
+      this.rows$.next(rows);
       this.chunkSizeInBytes += TWO_KB;
       this.isLoading = false;
     };
