@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 import { ViewerState } from './viewer.component';
-import { ValidatorWorker, ValidatorWorkerResult } from './worker.types';
+import { ValidatorWorker, ValidatorWorkerResult } from '../workers/validator.worker.types';
 
 @Component({
   selector: 'rf-home',
@@ -33,7 +33,7 @@ import { ValidatorWorker, ValidatorWorkerResult } from './worker.types';
 })
 export class HomeComponent {
   private router = inject(Router);
-  private validatorWorker: ValidatorWorker = new Worker(new URL('./validator.worker', import.meta.url));
+  private validatorWorker: ValidatorWorker = new Worker(new URL('../workers/validator.worker', import.meta.url));
   private file?: File;
 
   loading$ = new BehaviorSubject(false);

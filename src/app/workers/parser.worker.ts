@@ -1,7 +1,7 @@
 /// <reference lib="webworker" />
 
 import untruncateJson from 'untruncate-json';
-import { ParserWorkerData, ParserWorkerResult } from './worker.types';
+import { ParserWorkerData, ParserWorkerResult } from './parser.worker.types';
 
 const bracketsAndCurlyBraces = ['[', ']', '{', '}'];
 

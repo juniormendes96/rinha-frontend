@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 
-import { ValidatorWorkerData } from './worker.types';
+import { ValidatorWorkerData } from './validator.worker.types';
 
 addEventListener('message', ({ data: { file } }: MessageEvent<ValidatorWorkerData>) => {
   if (file.type !== 'application/json') {

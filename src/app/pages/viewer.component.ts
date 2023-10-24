@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RowComponent } from './row.component';
+import { RowComponent } from '../components/row.component';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { BehaviorSubject } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { ParserWorker, ParserWorkerResult } from './worker.types';
+import { ParserWorker, ParserWorkerResult } from '../workers/parser.worker.types';
 
 export interface ViewerState {
   file?: File;
@@ -42,7 +42,7 @@ const TWO_KB = 1024 * 2;
 export class ViewerComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private parserWorker: ParserWorker = new Worker(new URL('./parser.worker', import.meta.url));
+  private parserWorker: ParserWorker = new Worker(new URL('../workers/parser.worker', import.meta.url));
   private isLoading = false;
   private chunkSizeInBytes = TWO_KB;
 
