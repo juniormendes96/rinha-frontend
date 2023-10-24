@@ -30,8 +30,10 @@ const TWO_KB = 1024 * 2;
         (scrolled)="loadNextChunk()"
       >
         <div class="m-auto w-full max-w-5xl p-6">
-          <h1 class="text-3xl font-bold mb-3">{{ file.name }}</h1>
-          <rf-row *cdkVirtualFor="let row of rows$ | async; templateCacheSize: 0" class="block h-[24px]" [content]="row"></rf-row>
+          <h1 class="w-full mb-3 text-3xl font-bold">{{ file.name }}</h1>
+          <ul class="w-full">
+            <rf-row *cdkVirtualFor="let row of rows$ | async; templateCacheSize: 0" class="block h-[24px]" [content]="row"></rf-row>
+          </ul>
         </div>
       </cdk-virtual-scroll-viewport>
     </div>

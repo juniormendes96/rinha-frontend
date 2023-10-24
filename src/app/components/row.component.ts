@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="flex">
+    <li class="flex">
       <span
         *ngFor="let value of whiteSpaces; let first = first; let last = last"
         [ngClass]="{
@@ -19,7 +19,7 @@ import { CommonModule } from '@angular/common';
         &nbsp;
       </span>
       <span class="whitespace-nowrap" [innerHTML]="content"></span>
-    </div>
+    </li>
   `,
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush
