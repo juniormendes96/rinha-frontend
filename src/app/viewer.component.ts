@@ -5,6 +5,7 @@ import { RowComponent } from './row.component';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { BehaviorSubject } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { ParserWorker, ParserWorkerResult } from './worker.types';
 
 export interface ViewerState {
   file?: File;
@@ -41,7 +42,7 @@ const TWO_KB = 1024 * 2;
 export class ViewerComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private parserWorker = new Worker(new URL('./parser.worker', import.meta.url));
+  private parserWorker: ParserWorker = new Worker(new URL('./parser.worker', import.meta.url));
   private isLoading = false;
   private chunkSizeInBytes = TWO_KB;
 
@@ -50,7 +51,7 @@ export class ViewerComponent implements OnInit {
   rows$ = new BehaviorSubject<string[]>([]);
 
   constructor() {
-    this.parserWorker.onmessage = ({ data: { rows, status } }) => {
+    this.parserWorker.onmessage = ({ data: { status, rows } }: MessageEvent<ParserWorkerResult>) => {
       if (status === 'error') {
         this.router.navigate(['/']);
         return;

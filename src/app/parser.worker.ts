@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 
 import untruncateJson from 'untruncate-json';
+import { ParserWorkerData, ParserWorkerResult } from './worker.types';
 
 const bracketsAndCurlyBraces = ['[', ']', '{', '}'];
 
@@ -18,7 +19,7 @@ const addHtmlTags = (jsonString: string) => {
   });
 };
 
-addEventListener('message', ({ data: { file, chunkSizeInBytes } }) => {
+addEventListener('message', ({ data: { file, chunkSizeInBytes } }: MessageEvent<ParserWorkerData>) => {
   const fileReader = new FileReader();
   fileReader.readAsText(file.slice(0, chunkSizeInBytes));
   fileReader.onload = event => {
@@ -27,7 +28,11 @@ addEventListener('message', ({ data: { file, chunkSizeInBytes } }) => {
     const parsed = JSON.parse(json);
     const stringified = JSON.stringify(parsed, null, 3);
     const rows = addHtmlTags(stringified).split('\n');
-    postMessage({ status: 'success', rows });
+    const message: ParserWorkerResult = { status: 'success', rows };
+    postMessage(message);
   };
-  fileReader.onerror = () => postMessage({ status: 'error' });
+  fileReader.onerror = () => {
+    const message: ParserWorkerResult = { status: 'error', rows: [] };
+    postMessage(message);
+  };
 });

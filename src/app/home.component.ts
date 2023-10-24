@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 import { ViewerState } from './viewer.component';
+import { ValidatorWorker, ValidatorWorkerResult } from './worker.types';
 
 @Component({
   selector: 'rf-home',
@@ -32,15 +33,14 @@ import { ViewerState } from './viewer.component';
 })
 export class HomeComponent {
   private router = inject(Router);
-  private validatorWorker = new Worker(new URL('./validator.worker', import.meta.url));
+  private validatorWorker: ValidatorWorker = new Worker(new URL('./validator.worker', import.meta.url));
   private file?: File;
 
   loading$ = new BehaviorSubject(false);
   invalidJson$ = new BehaviorSubject(false);
 
   constructor() {
-    this.validatorWorker.onmessage = ({ data }) => {
-      const isValid = data;
+    this.validatorWorker.onmessage = ({ data: isValid }: MessageEvent<ValidatorWorkerResult>) => {
       this.invalidJson$.next(!isValid);
       this.loading$.next(false);
 
