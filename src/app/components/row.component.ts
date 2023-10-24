@@ -7,17 +7,7 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   template: `
     <li class="flex">
-      <span
-        *ngFor="let value of whiteSpaces; let first = first; let last = last"
-        [ngClass]="{
-          'h-full border-solid border-gray-300 invisible': true,
-          'border-l': first,
-          'border-r': !first,
-          '!visible': first || (value % 3 === 0 && !last)
-        }"
-      >
-        &nbsp;
-      </span>
+      <span *ngFor="let tab of tabs" class="w-4 shadow-[1px_0_0_0_#d1d5db_inset]"></span>
       <span class="whitespace-nowrap" [innerHTML]="content"></span>
     </li>
   `,
@@ -27,10 +17,13 @@ import { CommonModule } from '@angular/common';
 export class RowComponent implements OnInit {
   @Input({ required: true }) content!: string;
 
-  whiteSpaces: number[] = [];
+  tabs: number[] = [];
 
   ngOnInit(): void {
     const leadingWhiteSpacesCount = (this.content.match(/^ */) || [])[0]?.length ?? 0;
-    this.whiteSpaces = Array.from({ length: leadingWhiteSpacesCount }, (_, i) => i + 1);
+
+    if (leadingWhiteSpacesCount) {
+      this.tabs = Array.from({ length: leadingWhiteSpacesCount / 3 });
+    }
   }
 }
