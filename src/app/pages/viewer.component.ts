@@ -44,6 +44,7 @@ export class ViewerComponent implements OnInit {
   private router = inject(Router);
   private parserWorker: ParserWorker = new Worker(new URL('../workers/parser.worker', import.meta.url));
   private isLoading = false;
+  private isFullyLoaded = false;
   private chunkSizeInBytes = TWO_KB;
 
   file: File = this.route.snapshot.data['file'];
@@ -58,6 +59,7 @@ export class ViewerComponent implements OnInit {
       }
 
       this.rows$.next(rows);
+      this.isFullyLoaded = this.chunkSizeInBytes >= this.file.size;
       this.chunkSizeInBytes += TWO_KB;
       this.isLoading = false;
     };
@@ -68,7 +70,7 @@ export class ViewerComponent implements OnInit {
   }
 
   loadNextChunk(): void {
-    if (this.isLoading || !this.file) return;
+    if (this.isLoading || !this.file || this.isFullyLoaded) return;
 
     this.isLoading = true;
 
