@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RowComponent } from '../components/row.component';
@@ -30,7 +30,7 @@ const TWO_KB = 1024 * 2;
         (scrolled)="loadNextChunk()"
       >
         <div class="m-auto w-full max-w-5xl p-6">
-          <h1 class="w-full mb-3 text-3xl font-bold">{{ file.name }}</h1>
+          <h1 #heading class="w-full mb-3 text-3xl font-bold" [class.invisible]="isHeadingInvisible$ | async">{{ file.name }}</h1>
           <ul class="w-full">
             <rf-row *cdkVirtualFor="let row of rows$ | async; templateCacheSize: 0" class="block h-[24px]" [content]="row"></rf-row>
           </ul>
@@ -41,17 +41,21 @@ const TWO_KB = 1024 * 2;
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ViewerComponent implements OnInit {
+export class ViewerComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('heading') private heading!: ElementRef<HTMLElement>;
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private parserWorker: ParserWorker = new Worker(new URL('../workers/parser.worker', import.meta.url));
   private isLoading = false;
   private isFullyLoaded = false;
   private chunkSizeInBytes = TWO_KB;
+  private observer!: IntersectionObserver;
 
   file: File = this.route.snapshot.data['file'];
 
   rows$ = new BehaviorSubject<string[]>([]);
+  isHeadingInvisible$ = new BehaviorSubject(false);
 
   constructor() {
     this.parserWorker.onmessage = ({ data: { status, rows } }: MessageEvent<ParserWorkerResult>) => {
@@ -69,6 +73,15 @@ export class ViewerComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadNextChunk();
+  }
+
+  ngAfterViewInit(): void {
+    this.observer = new IntersectionObserver(entries => this.isHeadingInvisible$.next(!entries[0].isIntersecting));
+    this.observer.observe(this.heading.nativeElement);
+  }
+
+  ngOnDestroy(): void {
+    this.observer.disconnect();
   }
 
   loadNextChunk(): void {
