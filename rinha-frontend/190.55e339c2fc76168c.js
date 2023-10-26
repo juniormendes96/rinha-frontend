@@ -1,0 +1,1 @@
+(()=>{"use strict";addEventListener("message",({data:{file:s}})=>{if("application/json"!==s.type)return postMessage(!1);const e=new FileReader;e.readAsText(s),e.onload=a=>{try{JSON.parse(a.target?.result),postMessage(!0)}catch{postMessage(!1)}},e.onerror=()=>postMessage(!1)})})();
