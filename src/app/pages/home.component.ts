@@ -11,7 +11,7 @@ import { ValidatorWorker, ValidatorWorkerResult } from '../workers/validator.wor
   imports: [CommonModule],
   template: `
     <div
-      class="flex flex-col items-center justify-center h-full"
+      class="flex flex-col items-center justify-center h-full p-4"
       *ngIf="{ isLoading: loading$ | async, hasInvalidJson: invalidJson$ | async } as vm"
     >
       <h1 class="text-5xl font-bold mb-4 text-center">JSON Tree Viewer</h1>
