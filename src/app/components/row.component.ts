@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   template: `
     <li class="flex">
-      <span *ngFor="let tab of tabs" class="w-4 shadow-[1px_0_0_0_#d1d5db_inset]"></span>
+      <span *ngFor="let tab of tabs" class="w-[16px] min-w-[16px] shadow-[1px_0_0_0_#d1d5db_inset]"></span>
       <span class="whitespace-nowrap" [innerHTML]="content" tabindex="0"></span>
     </li>
   `,
